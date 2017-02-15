@@ -6,7 +6,8 @@ const writer = csvWriter({ separator: ';' })
 const storeNr = '1213'
 const butiksartikelnFile = 'butiksartikeln.xml'
 const sortimentFile = 'sortimentsfilen.xml'
-const exportFile = 'vastrahamnen.csv'
+const exportCSV = 'vastrahamnen.csv'
+const exportJSON = 'vastrahamnen.json'
 
 fs.readFile(butiksartikelnFile, 'utf8', (err, data) => {
   if (err) { return console.error(err) }
@@ -20,17 +21,19 @@ fs.readFile(butiksartikelnFile, 'utf8', (err, data) => {
       parseString(data, (err, res) => {
         if (err) { return console.error(err) }
 
-        writer.pipe(fs.createWriteStream(exportFile))
-        let allKeys = [];
+        writer.pipe(fs.createWriteStream(exportCSV))
+        //let allKeys = [];
 
         let sortiment = res.artiklar.artikel.filter(x => store.ArtikelNr.indexOf(x.nr[0]) > -1)
         sortiment = sortiment.map(x => {
+          /*
           const keys = Object.keys(x)
           keys.map(y => {
             if (allKeys.indexOf(y) === -1) {
               allKeys.push(y)
             }
           })
+          */
           item = {
             nr: x.nr ? x.nr[0] : undefined,
             articleid: x.Artikelid ? x.Artikelid[0] : undefined,
@@ -66,18 +69,24 @@ fs.readFile(butiksartikelnFile, 'utf8', (err, data) => {
 
           if (item.alcohol && item.volume && item.price) {
             const alc = parseInt(item.alcohol.slice(0, -1))
-            const volume = parseInt(item.volume)
-            const price = parseInt(item.price)
-
-            item.apk = volume * alc / 100 / price
+            item.apk = item.volume * alc / 100 / item.price
           }
           writer.write(item)
           return item
         })
-        writer.end()
-        //console.log(allKeys)
         console.log('Found', sortiment.length, 'of', store.ArtikelNr.length, 'products at Systembolaget', storeNr)
-        console.log('Dumped to', exportFile)
+
+        console.log('Dumped CSV to', exportCSV)
+        writer.end()
+
+        fs.writeFile(exportJSON, JSON.stringify(sortiment), 'utf8', (err) => {
+          if(err) {
+            return console.error(err);
+          }
+          console.log('Dumped JSON to', exportJSON)
+        })
+
+        //console.log(allKeys)
       })
     })
   })
