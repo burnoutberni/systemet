@@ -12,4 +12,9 @@ Download the ```butiksartikeln``` and ```sortimentsfilen``` XML files from [Syst
 
 Outputs a CSV file containing all product informations available of all products that are available at the chosen Systembolaget store and calculates their APK (alcohol in ml per SEK).
 
+## TODO
+
+- [ ] Search for Systembolaget store by location or name instead of asking for storeNr
+- [ ] Instead of CSV, create pretty web platform
+
 Happy hacking (and drinking)!
