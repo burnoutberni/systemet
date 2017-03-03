@@ -1,6 +1,7 @@
 const fs = require('fs')
 const https = require('https')
 const express = require('express')
+const cors = require('cors')
 const products = require(__dirname + '/all.json')
 
 let app = express()
@@ -10,6 +11,8 @@ https.createServer({
   key: fs.readFileSync('key.pem'),
   cert: fs.readFileSync('cert.pem')
 }, app).listen(port);
+
+app.use(cors())
 
 app.get('/', (req, res) => {
   res.json({'status' : 'online'})
