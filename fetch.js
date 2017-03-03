@@ -1,13 +1,28 @@
 const fs = require('fs')
+const https = require('https')
 const parseString = require('xml2js').parseString
 const csvWriter = require('csv-write-stream')
+let storeNr, exportCSV, exportJSON;
+
+/**
+// settings
+storeNr = '1213'
+exportCSV = 'vastrahamnen.csv'
+exportJSON = 'vastrahamnen.json'
+*/
 
 const writer = csvWriter({ separator: ';' })
-const storeNr = '1213'
 const butiksartikelnFile = 'butiksartikeln.xml'
 const sortimentFile = 'sortimentsfilen.xml'
-const exportCSV = 'vastrahamnen.csv'
-const exportJSON = 'vastrahamnen.json'
+
+
+if(!exportCSV) {
+  exportCSV = 'all.csv'
+}
+
+if(!exportJSON) {
+  exportJSON = 'all.json'
+}
 
 fs.readFile(butiksartikelnFile, 'utf8', (err, data) => {
   if (err) { return console.error(err) }
@@ -15,7 +30,10 @@ fs.readFile(butiksartikelnFile, 'utf8', (err, data) => {
     if (err) { return console.error(err) }
 
     const stores = res.ButikArtikel.Butik
-    const store = stores.find(x => x['$'].ButikNr === storeNr)
+    let store;
+    if(!!storeNr) {
+      store = stores.find(x => x['$'].ButikNr === storeNr)
+    }
 
     fs.readFile(sortimentFile, 'utf8', (err, data) => {
       parseString(data, (err, res) => {
@@ -24,7 +42,10 @@ fs.readFile(butiksartikelnFile, 'utf8', (err, data) => {
         writer.pipe(fs.createWriteStream(exportCSV))
         //let allKeys = [];
 
-        let sortiment = res.artiklar.artikel.filter(x => store.ArtikelNr.indexOf(x.nr[0]) > -1)
+        let sortiment = res.artiklar.artikel;
+        if(!!store) {
+          sortiment = sortiment.filter(x => store.ArtikelNr.indexOf(x.nr[0]) > -1)
+        }
         sortiment = sortiment.map(x => {
           /*
           const keys = Object.keys(x)
@@ -74,16 +95,21 @@ fs.readFile(butiksartikelnFile, 'utf8', (err, data) => {
           writer.write(item)
           return item
         })
-        console.log('Found', sortiment.length, 'of', store.ArtikelNr.length, 'products at Systembolaget', storeNr)
 
-        console.log('Dumped CSV to', exportCSV)
+        if(!!store) {
+          console.log(`Found ${sortiment.length} of ${store.ArtikelNr.length} products at Systembolaget #${storeNr}`)
+        } else {
+          console.log(`Found ${sortiment.length} products at all Systembolaget stores`)
+        }
+
+        console.log(`Dumped CSV to ${exportCSV}`)
         writer.end()
 
         fs.writeFile(exportJSON, JSON.stringify(sortiment), 'utf8', (err) => {
           if(err) {
             return console.error(err);
           }
-          console.log('Dumped JSON to', exportJSON)
+          console.log(`Dumped JSON to ${exportJSON}`)
         })
 
         //console.log(allKeys)

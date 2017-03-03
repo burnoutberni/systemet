@@ -4,13 +4,15 @@
   "description": "Find all products available at a Systembolaget near you.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node server.js",
+    "fetch": "./fetch.sh && node fetch.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Bernhard Hayden",
   "license": "AGPL-3.0",
   "dependencies": {
     "csv-write-stream": "^2.0.0",
+    "express": "^4.15.0",
     "xml2js": "^0.4.17"
   }
 }

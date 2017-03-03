@@ -2,15 +2,18 @@
 Find all products available at a Systembolaget near you.
 
 ## Usage
-Download the ```butiksartikeln``` and ```sortimentsfilen``` XML files from [Systembolaget](https://www.systembolaget.se/api/) and make sure that ```index.js``` points to the correct paths. Change the ```storeNr``` to the Systembolaget store you want to query and ```exportCSV``` and ```exportJSON``` to the file paths where you want to receive the output.
-
     // make sure all dependencies are installed
     npm install
 
-    // start script
+    // run script to fetch data
+    npm run fetch
+
+    // start server to query for product ids
     npm start
 
-Outputs a CSV file containing all product informations available of all products that are available at the chosen Systembolaget store and calculates their APK (alcohol in ml per SEK).
+```fetch``` fetches the relevant data from [Systembolaget](https://systembolaget.se/api) and outputs a CSV and a JSON file containing all product informations available of all products that are available at the chosen Systembolaget store (or generally all products if no store was specified) and calculates their APK (alcohol in ml per SEK). In case you want to specify a certain Systembolaget store, open ```fetch.js``` and change the ```storeNr``` to the Systembolaget store you want to query and ```exportCSV``` and ```exportJSON``` to the file paths where you want to receive the output.
+
+```start``` starts a server on port 8081 which returns the corresponding product information if you query for ```/:productId```.
 
 ## TODO
 

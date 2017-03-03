@@ -39,3 +39,6 @@ jspm_packages
 # Custom gitignore
 butiksartikeln.xml
 sortimentsfilen.xml
+*.json
+*.csv
+!package.json
