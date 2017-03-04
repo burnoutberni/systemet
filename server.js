@@ -8,8 +8,8 @@ let app = express()
 let port = 8081;
 
 https.createServer({
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
+  key: fs.readFileSync(__dirname + '/key.pem'),
+  cert: fs.readFileSync(__dirname + '/cert.pem')
 }, app).listen(port);
 
 app.use(cors())
